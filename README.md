@@ -74,21 +74,21 @@ A future cleanup can consolidate the three snapshots into one shared React/TypeS
 
 ### Web
 
-![RECON COPILOT Web Demo](screenshots/web-demo.png)
+![RECON COPILOT Web Demo](web-demo.png)
 
 ### iPadOS
 
-![RECON COPILOT iPad Demo](screenshots/ipad-demo.png)
+![RECON COPILOT iPad Demo](ipad-demo.png)
 
 ### iPhone
 
 #### Map
 
-![RECON COPILOT iPhone Map](screenshots/iphone-map.png)
+![RECON COPILOT iPhone Map](iphone-map.png)
 
 #### Sensors & Reports
 
-![RECON COPILOT iPhone Sensors and Reports](screenshots/iphone-sensors-reports.png)
+![RECON COPILOT iPhone Sensors and Reports](iphone-sensors-reports.png)
 
 
 
