@@ -69,3 +69,28 @@ Generated dependencies and build artifacts are deliberately excluded. In particu
 ## Project direction
 
 A future cleanup can consolidate the three snapshots into one shared React/TypeScript/Capacitor codebase with responsive desktop, iPad, and iPhone layouts. Keeping the snapshots separate for now makes it easier to preserve the current working interfaces while that refactor is planned.
+
+## Demo Screenshots
+
+### Web
+
+![RECON COPILOT Web Demo](screenshots/web-demo.png)
+
+### iPadOS
+
+![RECON COPILOT iPad Demo](screenshots/ipad-demo.png)
+
+### iPhone
+
+#### Map
+
+![RECON COPILOT iPhone Map](screenshots/iphone-map.png)
+
+#### Sensors & Reports
+
+![RECON COPILOT iPhone Sensors and Reports](screenshots/iphone-sensors-reports.png)
+
+
+
+
+
