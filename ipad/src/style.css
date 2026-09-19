@@ -1,0 +1,302 @@
+*{box-sizing:border-box}html,body,#root,.app{margin:0;height:100%;font-family:Inter,Arial,sans-serif;background:#101512;color:#d7e1d9}.app{display:grid;grid-template:48px 1fr 32px/250px minmax(0,1fr) 300px}header{grid-column:1/4;background:#111714;border-bottom:1px solid #35443a;display:flex;align-items:center;gap:28px;padding:0 16px;font-size:12px;letter-spacing:1.4px}header b{font-size:18px;color:#b8ffca}header i{margin-left:auto;color:#7e9385;font-style:normal}aside{background:#151c18;padding:14px;overflow:auto}.left{border-right:1px solid #35443a}.right{border-left:1px solid #35443a}h3{font-size:11px;letter-spacing:1.6px;color:#8ea397;border-bottom:1px solid #303c34;padding-bottom:8px;margin:8px 0 10px}h3 small{float:right}.muted{font-size:11px;line-height:1.45;color:#74847a}.obj{display:flex;align-items:center;gap:9px;background:#1d2721;margin:6px 0;padding:9px;border-left:2px solid #70e68e}.obj div{flex:1}.obj b,.obj small{display:block;font-size:11px}.obj small{color:#7f9487}.obj button{border:0;background:none;color:#8ca095}.left>button{width:100%;background:#1b2520;border:1px solid #3a4a40;color:#b7c6bd;padding:9px;margin:4px 0;font-size:11px;letter-spacing:.7px}.left>button.active{border-color:#70e68e;color:#70e68e}.left>button:disabled{opacity:.35}.track-card,.sensor-card{width:100%;display:flex;align-items:center;gap:9px;text-align:left;padding:9px;margin:6px 0;color:#e6ece8}.track-card span:last-child,.sensor-card span:last-child{display:flex;flex-direction:column;gap:3px;min-width:0}.track-card b,.track-card small,.track-card em,.sensor-card b,.sensor-card small,.sensor-card em{font-size:11px}.track-card small,.track-card em,.sensor-card small{color:#94a39a;font-style:normal}.track-card.hostile{background:#251d1d;border:1px solid #5e3939;border-left:3px solid #ff6262}.track-card.friendly{background:#17251d;border:1px solid #315f40;border-left:3px solid #63e589}.mini-vector{font-size:20px}.mini-vector.hostile{color:#ff6262}.mini-vector.friendly{color:#63e589}.sensor-card{background:#19201c;border:1px solid #35443a}.sensor-card.detecting{border-color:#829f8d;background:#1d2922}.sensor-card.detecting em{color:#b8ffca;font-style:normal}.sensor-card.idle em{color:#708077;font-style:normal}.sensor-badge{width:35px;height:35px;border:1px solid #607066;display:flex!important;align-items:center;justify-content:center;font:10px monospace;color:#c6d2ca}.details dl{display:grid;grid-template-columns:75px 1fr;gap:6px;margin:0;font-size:11px}.details dt{color:#7f9487}.details dd{margin:0}.feed{padding:7px 0;border-bottom:1px solid #2c3831;font-size:10px;display:flex;gap:8px}.feed b{color:#b8ffca}.feed span{color:#899b90}main{position:relative;min-width:0}.leaflet-container{height:100%;background:#172019;filter:saturate(.55) brightness(.72) contrast(1.15)}.cross{pointer-events:none;position:absolute;z-index:500;top:50%;left:50%;font:28px monospace;color:#b8ffca;transform:translate(-50%,-50%)}.zone-label{position:absolute;z-index:500;right:12px;bottom:12px;background:rgba(17,23,20,.88);border:1px solid #58675e;color:#b8c4bc;padding:6px 8px;font:10px monospace}.alert-banner{position:absolute;z-index:2000;top:48px;left:250px;right:300px;min-height:54px;background:#5a1717;border-bottom:1px solid #ff6d6d;color:#fff;display:flex;align-items:center;gap:18px;padding:9px 14px;font-size:12px}.alert-banner span{flex:1}.alert-banner button{background:#fff1f1;border:1px solid #fff;color:#5a1717;padding:7px 10px;font-size:10px;font-weight:700}.vector-wrap,.sensor-wrap{background:transparent;border:0}.air-vector{width:38px;height:38px;position:relative}.air-vector:before{content:"";position:absolute;left:17px;top:2px;width:4px;height:31px;background:currentColor;border-radius:2px}.air-vector:after{content:"";position:absolute;left:5px;top:15px;width:28px;height:4px;background:currentColor;border-radius:2px}.air-vector span:before,.air-vector span:after{content:"";position:absolute;top:1px;width:4px;height:15px;background:currentColor;border-radius:2px}.air-vector span:before{left:12px;transform:rotate(45deg);transform-origin:bottom}.air-vector span:after{right:12px;transform:rotate(-45deg);transform-origin:bottom}.air-vector.uas{color:#ff3f3f;filter:drop-shadow(0 0 3px #6b0000)}.air-vector.friendly{color:#48e879;filter:drop-shadow(0 0 3px #064f20)}.sensor-glyph{width:42px;height:42px;border:2px solid #89978f;border-radius:50%;background:#172019;color:#d4ddd7;display:flex;align-items:center;justify-content:center;font:9px monospace;position:relative}.sensor-glyph i{position:absolute;width:50px;height:50px;border:1px dashed #6e7b73;border-radius:50%}.sensor-glyph.active{border-color:#b8ffca;color:#b8ffca}.sensor-glyph.active i{border-color:#b8ffca}footer{grid-column:1/4;background:#111714;border-top:1px solid #35443a;display:flex;align-items:center;gap:25px;padding:0 14px;font:10px monospace;color:#92a69a}footer strong{margin-left:auto;color:#68e786}@media(max-width:900px){.app{grid-template:48px 1fr auto 32px/190px 1fr}.right{grid-column:1/3;grid-row:3;max-height:220px;border-left:0;border-top:1px solid #35443a}.right .sensor-card{display:inline-flex;width:31%;margin-right:1%}header,footer{grid-column:1/3}.alert-banner{left:190px;right:0}.left{grid-row:2}main{grid-row:2}}@media(max-width:650px){.app{grid-template-columns:150px 1fr}.right .sensor-card{width:100%}header{gap:10px}header span{display:none}.alert-banner{left:150px;flex-wrap:wrap}}
+/* v4 monochrome theme + multi-domain demo contacts */
+html,body,#root,.app{background:#080808;color:#d8d8d8}header,footer{background:#0b0b0b;border-color:#333}header img{width:34px;height:34px;object-fit:contain;border-radius:50%;filter:grayscale(1)}header b{color:#f0f0f0}header i,h3,.muted{color:#999}aside{background:#111}.left{border-color:#333}.right{border-color:#333}.left>button,.sensor-card,.obj{background:#171717;border-color:#3b3b3b;color:#d0d0d0}.left>button.active{border-color:#aaa;color:#fff}.track-card.hostile{background:#181414;border-color:#503333;border-left-color:#e34a4a}.track-card.friendly{background:#121812;border-color:#31513a;border-left-color:#48c56b}.leaflet-container{background:#111;filter:grayscale(1) brightness(.62) contrast(1.2)}.cross{color:#ddd}.zone-label{background:rgba(10,10,10,.9);border-color:#555;color:#bbb}.sensor-glyph{background:#111;border-color:#777;color:#ddd}.sensor-glyph i{border-color:#666}.sensor-glyph.active{border-color:#fff;color:#fff}.sensor-glyph.active i{border-color:#aaa}.sensor-card.detecting{background:#202020;border-color:#888}.sensor-card.detecting em,.feed b{color:#eee}footer{color:#aaa}footer strong{color:#ddd}.person-glyph{width:26px;height:32px;position:relative;color:#e34a4a}.person-glyph:before{content:"";position:absolute;left:9px;top:1px;width:8px;height:8px;border:2px solid currentColor;border-radius:50%}.person-glyph:after{content:"";position:absolute;left:11px;top:10px;width:4px;height:15px;background:currentColor;box-shadow:-6px 7px 0 -1px currentColor,6px 7px 0 -1px currentColor}.person-glyph span:before,.person-glyph span:after{content:"";position:absolute;top:13px;width:3px;height:12px;background:currentColor}.person-glyph span:before{left:6px;transform:rotate(35deg)}.person-glyph span:after{right:6px;transform:rotate(-35deg)}.ship-glyph{width:42px;height:26px;position:relative;color:#e34a4a}.ship-glyph:before{content:"";position:absolute;left:3px;right:3px;bottom:4px;height:10px;background:currentColor;clip-path:polygon(0 0,100% 0,82% 100%,18% 100%)}.ship-glyph:after{content:"";position:absolute;left:16px;bottom:14px;width:12px;height:8px;border:2px solid currentColor;border-bottom:0}.person-glyph.detected,.ship-glyph.detected{filter:drop-shadow(0 0 4px #777)}
+/* v5 RECON COPILOT classification banners and high-visibility symbology */
+.app{grid-template:24px 48px 1fr 32px 24px/250px minmax(0,1fr) 300px}
+.classification{grid-column:1/4;background:#050505;color:#42e36f;display:flex;align-items:center;justify-content:center;font:700 12px/1 monospace;letter-spacing:2.2px;border-color:#2b2b2b;z-index:1800}
+.classification.top{grid-row:1;border-bottom:1px solid #2b2b2b}.classification.bottom{grid-row:5;border-top:1px solid #2b2b2b}
+header{grid-row:2;grid-column:1/4}header img{filter:none}header b{color:#f4f4f4}
+.left,main,.right{grid-row:3}.left{grid-column:1}.right{grid-column:3}main{grid-column:2}
+footer{grid-row:4;grid-column:1/4}
+.alert-banner{top:72px}
+/* Basemap remains monochrome; Leaflet div-icons are separately vivid. */
+.leaflet-tile-pane{filter:grayscale(1) brightness(.62) contrast(1.25)}
+.leaflet-container{filter:none;background:#111}
+.leaflet-overlay-pane svg path{stroke:#d0d0d0}
+.air-vector.uas{color:#ff3030;filter:drop-shadow(0 0 5px rgba(255,48,48,.85))}.air-vector.friendly{color:#39ef72;filter:drop-shadow(0 0 5px rgba(57,239,114,.75))}
+.person-glyph,.ship-glyph{color:#ff3030}.person-glyph.detected,.ship-glyph.detected{filter:drop-shadow(0 0 5px rgba(255,48,48,.85))}
+.sensor-glyph{border-color:#ffc928;color:#ffc928;background:#0b0b0b}.sensor-glyph i{border-color:#ffc928}.sensor-glyph.active{border-color:#00d9ff;color:#00d9ff;filter:drop-shadow(0 0 4px rgba(0,217,255,.7))}.sensor-glyph.active i{border-color:#00d9ff}
+@media(max-width:900px){.app{grid-template:24px 48px 1fr auto 32px 24px/190px 1fr}.classification,header,footer{grid-column:1/3}.classification.top{grid-row:1}.classification.bottom{grid-row:6}.left,main{grid-row:3}.right{grid-row:4;grid-column:1/3}.left{grid-column:1}main{grid-column:2}footer{grid-row:5}.alert-banner{top:72px}}
+@media(max-width:650px){.app{grid-template-columns:150px 1fr}}
+/* v6 reporting workflow + classification marking */
+.classification{background:#159447;color:#000;font-family:Arial,sans-serif;font-weight:900;font-size:13px;letter-spacing:1.5px;border-color:#159447}
+.reports{margin-top:14px}.empty-report{border:1px dashed #555;padding:12px;text-align:center;color:#777;font:10px monospace}.report-card{background:#161616;border:1px solid #444;border-left:3px solid #aaa;padding:9px;margin:8px 0}.report-card.reported{border-left-color:#3ee675}.report-head{display:flex;gap:7px;align-items:center;font:9px monospace;color:#aaa}.report-head b{color:#fff}.report-head span{margin-left:auto}.report-head em{font-style:normal;border:1px solid #555;padding:2px 4px}.report-card>strong{display:block;margin:7px 0 4px;font-size:11px}.report-card pre{white-space:pre-wrap;margin:0;color:#bbb;font:9px/1.45 monospace}.report-actions{display:flex;gap:6px;margin-top:8px}.report-actions button{background:#202020;border:1px solid #555;color:#ddd;padding:5px 7px;font-size:9px}.report-actions button:first-child{border-color:#777;color:#fff}
+
+/* v6.1 classification banner refinement */
+.classification{color:#fff;letter-spacing:.25px}
+
+/* v6.2 destination naming + multi-zone clock */
+footer strong{margin-left:auto}.time-group{display:flex;align-items:center;gap:8px;margin-left:4px;padding-left:12px;border-left:1px solid #444;font-family:Arial,sans-serif;white-space:nowrap}.time-group b{font-size:13px;color:#fff;letter-spacing:.2px}.time-group span{font-size:10px;color:#aaa}.time-group b,.time-group span{font-variant-numeric:tabular-nums}
+/* v7 map layers */
+.layer-list{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}.layer-row{display:grid;grid-template-columns:18px 1fr 28px;align-items:center;gap:7px;padding:7px 8px;background:#161616;border:1px solid #333;font:10px Arial,sans-serif;color:#ccc;cursor:pointer}.layer-row:hover{border-color:#666}.layer-row input{accent-color:#aaa}.layer-row i{font-style:normal;font:9px monospace;color:#777;text-align:right}.layer-row:has(input:checked) i{color:#eee}.poi-wrap{background:transparent;border:0}.poi-glyph{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;background:#080808;border:2px solid currentColor;box-shadow:0 0 5px rgba(0,0,0,.9)}.poi-glyph.airport{color:#58a6ff}.poi-glyph.port{color:#d2a8ff}
+/* v8 adjustable proximity zone */
+.alert-zone-tools{border:1px solid #444;background:#151515;padding:10px;margin:5px 0 10px;display:flex;flex-direction:column;gap:7px;font:10px Arial,sans-serif}.alert-zone-tools>b{color:#fff;letter-spacing:.8px}.alert-zone-tools>span{color:#999;line-height:1.35}.alert-zone-tools label{display:flex;justify-content:space-between;color:#aaa}.alert-zone-tools label strong{color:#fff}.alert-zone-tools input[type=range]{width:100%;accent-color:#e7c84b}.alert-zone-tools button{background:#1b1b1b;border:1px solid #555;color:#ddd;padding:7px;font-size:10px}.origin-wrap{background:transparent!important;border:0!important}.origin-plus{width:28px;height:28px;background:transparent;color:#f2f2f2;display:flex;align-items:center;justify-content:center;font:900 28px/1 Arial,sans-serif;text-shadow:0 1px 3px #000,1px 0 2px #000,-1px 0 2px #000;cursor:grab;user-select:none}.origin-plus:active{cursor:grabbing}.zone-label.hot{background:#8d0909;border:2px solid #ff4a4a;color:#fff;font-weight:800}.zone-label small{font-size:9px;color:inherit}.proximity-active{box-shadow:inset 0 0 0 6px #ff2d2d;animation:proximityPulse 1s steps(2,end) infinite}.alert-banner{min-height:70px;background:#a40000!important;border:3px solid #ff5b5b!important;font-size:14px!important;box-shadow:0 5px 24px rgba(255,0,0,.45);animation:alertPulse .8s steps(2,end) infinite}.alert-banner strong{font-size:16px;letter-spacing:1px}.alert-banner button{font-size:11px!important;padding:10px 14px!important}@keyframes alertPulse{50%{background:#5c0000!important}}@keyframes proximityPulse{50%{box-shadow:inset 0 0 0 3px #ff2d2d}}@media(prefers-reduced-motion:reduce){.proximity-active,.alert-banner{animation:none}}
+/* v8.2 sensor state visibility + clickable classification cycle */
+.classification{border-left:0;border-right:0;width:100%;padding:0;cursor:pointer;font-family:Arial,sans-serif;font-weight:900;letter-spacing:.25px;text-align:center;appearance:none}
+.classification:hover{filter:brightness(1.08)}
+.classification:focus-visible{outline:2px solid #fff;outline-offset:-3px}
+.sensor-card.idle{border-color:#159447;background:#101610}
+.sensor-card.idle em{color:#4cff7a;font-weight:800}
+.sensor-card.detecting{border-color:#ff3030;background:#241010;animation:sensor-red-blink .85s steps(2,end) infinite}
+.sensor-card.detecting em{color:#ff5a5a;font-weight:900}
+.sensor-card.detecting .sensor-badge{border-color:#ff3030;color:#ff5a5a}
+.sensor-card.idle .sensor-badge{border-color:#159447;color:#4cff7a}
+@keyframes sensor-red-blink{0%,45%{background:#2c0c0c;border-color:#ff3030;box-shadow:inset 0 0 0 1px rgba(255,48,48,.35)}50%,100%{background:#141414;border-color:#6f2020;box-shadow:none}}
+@media (prefers-reduced-motion:reduce){.sensor-card.detecting{animation:none;border-color:#ff3030;background:#241010}}
+
+/* v8.3 map sensor iconography + directional pointers */
+.classification{border:none!important;box-shadow:none!important}
+.classification.top{border-bottom:none!important}.classification.bottom{border-top:none!important}
+.air-vector{display:none!important}
+.air-pointer{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:24px solid currentColor;transform-origin:50% 50%;filter:drop-shadow(0 0 4px currentColor)}
+.air-pointer.uas{color:#ff3030}.air-pointer.friendly{color:#39ef72}
+.sensor-wrap{background:transparent!important;border:0!important;overflow:visible!important}
+.map-sensor{width:48px;height:50px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;color:#ffc928;font-family:Arial,sans-serif;font-weight:900;filter:drop-shadow(0 1px 2px #000)}
+.map-sensor b{font-size:10px;line-height:12px;margin-top:2px;letter-spacing:.15px;text-shadow:0 1px 2px #000}
+.sensor-symbol{width:32px;height:32px;position:relative;color:inherit}
+/* Radar: dish + mast + signal arcs */
+.map-sensor.rad .sensor-symbol:before{content:"";position:absolute;left:8px;top:9px;width:15px;height:9px;border:3px solid currentColor;border-top:0;border-radius:0 0 16px 16px;transform:rotate(-25deg)}
+.map-sensor.rad .sensor-symbol:after{content:"";position:absolute;left:15px;top:17px;width:3px;height:12px;background:currentColor;box-shadow:-5px 10px 0 -1px currentColor,5px 10px 0 -1px currentColor}
+.map-sensor.rad .sensor-symbol i:first-child{position:absolute;left:21px;top:3px;width:7px;height:7px;border-top:2px solid currentColor;border-right:2px solid currentColor;border-radius:0 8px 0 0}
+/* RF: antenna with radio waves */
+.map-sensor.rf .sensor-symbol:before{content:"";position:absolute;left:15px;top:7px;width:3px;height:22px;background:currentColor}
+.map-sensor.rf .sensor-symbol:after{content:"";position:absolute;left:10px;bottom:2px;width:13px;height:3px;background:currentColor}
+.map-sensor.rf .sensor-symbol i:first-child,.map-sensor.rf .sensor-symbol i:nth-child(2){position:absolute;top:5px;width:9px;height:17px;border:2px solid currentColor;border-top-color:transparent;border-bottom-color:transparent;border-radius:50%}
+.map-sensor.rf .sensor-symbol i:first-child{left:5px;border-right:0}.map-sensor.rf .sensor-symbol i:nth-child(2){right:5px;border-left:0}
+/* Seismic: ground sensor with vibration waves */
+.map-sensor.seis .sensor-symbol:before{content:"";position:absolute;left:11px;top:8px;width:11px;height:15px;border:3px solid currentColor;border-radius:2px}
+.map-sensor.seis .sensor-symbol:after{content:"";position:absolute;left:5px;bottom:4px;width:23px;height:3px;background:currentColor;box-shadow:4px 5px 0 -1px currentColor,-4px 5px 0 -1px currentColor}
+.map-sensor.seis .sensor-symbol i:first-child{position:absolute;left:1px;top:11px;width:6px;height:8px;border-top:2px solid currentColor;border-bottom:2px solid currentColor}.map-sensor.seis .sensor-symbol i:nth-child(2){position:absolute;right:1px;top:11px;width:6px;height:8px;border-top:2px solid currentColor;border-bottom:2px solid currentColor}
+/* FLIR: camera body and lens */
+.map-sensor.flir .sensor-symbol:before{content:"";position:absolute;left:4px;top:9px;width:20px;height:15px;border:3px solid currentColor;border-radius:2px}
+.map-sensor.flir .sensor-symbol:after{content:"";position:absolute;right:1px;top:12px;width:8px;height:9px;background:currentColor;clip-path:polygon(0 20%,100% 0,100% 100%,0 80%)}
+.map-sensor.flir .sensor-symbol i:first-child{position:absolute;left:9px;top:13px;width:7px;height:7px;border:2px solid currentColor;border-radius:50%}
+.map-sensor.active{color:#ff3030;filter:drop-shadow(0 0 5px rgba(255,48,48,.85))}
+/* v8.4 track-list pictograms + cursor detail cards */
+.track-icon{width:34px;height:34px;flex:0 0 34px;display:flex!important;align-items:center;justify-content:center;position:relative}
+.track-pointer{display:block;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:23px solid currentColor;filter:drop-shadow(0 0 3px currentColor)}
+.track-pointer.hostile{color:#ff3030}.track-pointer.friendly{color:#39ef72}
+.track-person{position:relative;width:22px;height:28px;color:#ff3030}.track-person:before{content:"";position:absolute;left:7px;top:0;width:8px;height:8px;border:2px solid currentColor;border-radius:50%}.track-person:after{content:"";position:absolute;left:9px;top:10px;width:4px;height:14px;background:currentColor;box-shadow:-5px 6px 0 -1px currentColor,5px 6px 0 -1px currentColor}
+.track-ship{position:relative;width:30px;height:20px;color:#ff3030}.track-ship:before{content:"";position:absolute;left:1px;right:1px;bottom:2px;height:9px;background:currentColor;clip-path:polygon(0 0,100% 0,80% 100%,20% 100%)}.track-ship:after{content:"";position:absolute;left:11px;bottom:11px;width:9px;height:6px;border:2px solid currentColor;border-bottom:0}
+.track-tooltip{position:fixed;z-index:5000;width:290px;max-width:calc(100vw - 24px);pointer-events:none;background:rgba(8,8,8,.97);border:1px solid #666;border-left:3px solid #ddd;padding:11px 12px;color:#eee;box-shadow:0 8px 24px rgba(0,0,0,.55);font:11px Arial,sans-serif}
+.track-tooltip strong,.track-tooltip small{display:block}.track-tooltip strong{font-size:12px;letter-spacing:.5px}.track-tooltip small{margin-top:3px;color:#aaa;font-size:9px}.track-tooltip dl{display:grid;grid-template-columns:82px 1fr;gap:5px 8px;margin:10px 0 0}.track-tooltip dt{color:#8e8e8e}.track-tooltip dd{margin:0;color:#f0f0f0;overflow-wrap:anywhere}
+
+/* v8.6 flying-track labels */
+.vector-wrap{overflow:visible!important;background:transparent!important;border:0!important}
+.air-track-map{position:relative;width:120px;height:58px;transform:translateX(45px)}
+.air-track-map .air-pointer{position:absolute;left:0;top:0}
+.air-map-label{position:absolute;top:31px;left:-45px;width:120px;text-align:center;font-family:Arial,sans-serif;font-weight:800;line-height:1.05;text-shadow:0 1px 3px #000,0 0 3px #000;white-space:nowrap;pointer-events:none}
+.air-map-label b{display:block;font-size:10px;letter-spacing:.15px}
+.air-map-label span{display:block;margin-top:2px;font:700 9px Arial,sans-serif;color:#fff}
+.air-map-label.uas b{color:#ff4a4a}.air-map-label.friendly b{color:#45ef78}
+
+.track-tooltip .flir-preview{display:block;width:100%;height:132px;object-fit:cover;margin:9px 0 4px;border:1px solid #666;filter:grayscale(1);background:#111}
+.track-tooltip .capture-caption{display:block;color:#aaa;font-size:8px;letter-spacing:.7px;margin-bottom:8px}
+
+/* v9.1 map-native layer control + balanced side columns */
+.app{grid-template-columns:300px minmax(0,1fr) 300px}
+.alert-banner{left:300px;right:300px}
+.map-layer-control{position:absolute;z-index:1600;top:12px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:6px;pointer-events:none}
+.map-layer-toggle,.map-layer-panel{pointer-events:auto}
+.map-layer-toggle{background:rgba(10,10,10,.94);border:1px solid #666;color:#eee;padding:9px 11px;font:800 10px Arial,sans-serif;letter-spacing:.8px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.5)}
+.map-layer-toggle:hover,.map-layer-toggle.open{border-color:#aaa;background:#171717}
+.map-layer-panel{width:235px;max-height:calc(100% - 48px);overflow:auto;background:rgba(10,10,10,.96);border:1px solid #666;padding:8px;box-shadow:0 4px 18px rgba(0,0,0,.65)}
+.map-layer-head{display:flex;align-items:center;justify-content:space-between;padding:2px 2px 7px;color:#eee;font:800 10px Arial,sans-serif;letter-spacing:1px}
+.map-layer-head button{border:0;background:transparent;color:#aaa;font-size:18px;line-height:1;cursor:pointer}.map-layer-head button:hover{color:#fff}
+.map-layer-panel .layer-list{margin:0}.map-layer-panel .layer-row{background:#151515}
+@media(max-width:900px){.app{grid-template-columns:220px 1fr}.alert-banner{left:220px;right:0}.map-layer-control{top:10px;right:10px}}
+@media(max-width:650px){.app{grid-template-columns:180px 1fr}.alert-banner{left:180px}.map-layer-panel{width:210px}}
+
+
+/* iOS / Capacitor touch layout */
+html,body,#root{overscroll-behavior:none;-webkit-text-size-adjust:100%}
+body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);background:#080808}
+button,input,label{-webkit-tap-highlight-color:transparent}
+button{touch-action:manipulation}
+.leaflet-container{touch-action:pan-x pan-y}
+
+@media (hover:none), (pointer:coarse){
+  .track-tooltip{left:12px!important;right:12px;top:auto!important;bottom:calc(42px + env(safe-area-inset-bottom));width:auto;max-width:none;max-height:48%;overflow:auto;pointer-events:none;border-left-width:3px}
+  .map-layer-toggle{min-height:44px;padding:10px 13px}
+  .map-layer-head button,.layer-row,.left>button,.track-card,.sensor-card{min-height:44px}
+  .sensor-wrap,.contact-wrap,.vector-wrap{cursor:pointer}
+}
+
+@media (max-width:700px) and (orientation:portrait){
+  html,body,#root{height:auto;min-height:100%}
+  body{overflow:auto}
+  .app{height:auto;min-height:100vh;display:grid;grid-template-columns:1fr;grid-template-rows:24px 48px 58vh auto auto 42px 24px}
+  .classification,.classification.top,.classification.bottom,header,footer,.left,.right,main{grid-column:1!important}
+  .classification.top{grid-row:1}.app>header{grid-row:2}.app>main{grid-row:3;min-height:58vh}.left{grid-row:4;border-right:0;border-top:1px solid #333}.right{grid-row:5;max-height:none;border-left:0;border-top:1px solid #333}.app>footer{grid-row:6}.classification.bottom{grid-row:7}
+  header{gap:10px;padding:0 10px}header span,header i{display:none}header b{font-size:15px}
+  aside{overflow:visible;padding:12px}
+  .right .sensor-card{display:flex;width:100%;margin:6px 0}
+  .alert-banner{position:fixed;left:8px;right:8px;top:calc(76px + env(safe-area-inset-top));min-height:0;flex-wrap:wrap;border:2px solid #ff5b5b!important}
+  .map-layer-control{top:10px;right:10px}.map-layer-panel{width:min(260px,calc(100vw - 28px));max-height:45vh}
+  footer{gap:10px;overflow-x:auto;white-space:nowrap;padding-left:10px;padding-right:10px}footer>span:nth-child(-n+2){display:none}footer strong{margin-left:0}.time-group{margin-left:auto}
+  .zone-label{bottom:10px;right:10px}
+}
+
+@media (max-height:500px) and (orientation:landscape){
+  .app{grid-template-rows:24px 44px 1fr 32px 24px;grid-template-columns:260px minmax(0,1fr) 280px}
+  header{height:44px}.alert-banner{top:68px;left:260px;right:280px}
+  aside{padding:10px}.track-card,.sensor-card{padding:7px;margin:4px 0}
+}
+
+/* iOS v2 — landscape-first, touch-first product treatment */
+@media (hover:none), (pointer:coarse){
+  /* Proximity zone is a reference overlay on mobile, not the dominant visual. */
+  .zone-label{font-size:8px;padding:4px 6px;opacity:.82;max-width:170px}
+  .alert-zone-tools{font-size:10px}
+  .alert-zone-tools input[type="range"]{height:30px}
+  .alert-banner{min-height:38px;padding:5px 9px;gap:8px;font-size:10px;background:rgba(90,23,23,.92)}
+  .alert-banner strong{font-size:10px}.alert-banner button{padding:5px 7px}
+  /* Detail is a compact selection sheet rather than a desktop hover tooltip. */
+  .track-tooltip{left:10px!important;right:10px!important;top:auto!important;bottom:calc(38px + env(safe-area-inset-bottom));width:auto!important;max-width:none!important;max-height:38%;padding:8px 10px;font-size:10px;overflow:auto;pointer-events:none}
+  .track-tooltip dl{grid-template-columns:72px 1fr;gap:3px 6px;margin-top:6px}
+  .track-tooltip .flir-preview{height:92px;margin-top:6px}
+  .track-tooltip .capture-caption{margin-bottom:5px}
+  .track-card,.sensor-card{min-height:40px;padding:6px 7px}
+  .map-sensor,.vector-wrap,.contact-wrap{touch-action:manipulation}
+}
+
+/* Primary iOS form factor: landscape. Keep map central and panels compact. */
+@media (orientation:landscape) and (pointer:coarse){
+  .app{grid-template-rows:20px 40px minmax(0,1fr) 28px 20px;grid-template-columns:220px minmax(0,1fr) 230px}
+  .classification{font-size:10px}.classification.top{grid-row:1}.classification.bottom{grid-row:5}
+  header{grid-row:2;height:40px;padding:0 9px;gap:12px}header img{width:28px;height:28px}header b{font-size:14px}header span,header i{font-size:9px}
+  .left,main,.right{grid-row:3}.left{grid-column:1}.right{grid-column:3}main{grid-column:2}
+  aside{padding:7px;overflow:auto}h3{margin:5px 0 6px;padding-bottom:5px;font-size:9px}
+  .left>button{padding:6px;margin:3px 0;font-size:9px;min-height:36px}
+  .track-card,.sensor-card{margin:3px 0;min-height:36px}.track-card b,.track-card small,.track-card em,.sensor-card b,.sensor-card small,.sensor-card em{font-size:9px}
+  footer{grid-row:4;height:28px;padding:0 8px;gap:12px;font-size:8px}
+  .alert-banner{top:60px;left:220px;right:230px}
+  .map-layer-control{top:8px;right:8px}.map-layer-toggle{min-height:36px;padding:7px 9px;font-size:9px}.map-layer-panel{width:210px;max-height:70%}
+}
+
+/* Portrait remains supported, but signals that landscape is the intended layout. */
+@media (orientation:portrait) and (pointer:coarse){
+  .app:before{content:"LANDSCAPE RECOMMENDED";position:fixed;z-index:9000;top:calc(30px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:rgba(10,10,10,.92);border:1px solid #666;color:#ddd;padding:5px 9px;font:800 9px Arial,sans-serif;letter-spacing:.8px;pointer-events:none}
+}
+
+/* iOS v2.1 — safe-area aware, map-first shell + branded startup */
+.ios-splash{display:none}
+@media (hover:none), (pointer:coarse){
+  body{padding:0!important}
+  .app{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+  /* iPhone landscape: remove desktop navigation/header entirely. */
+  .app>header{display:none!important}
+  .ios-splash{position:fixed;inset:0;z-index:20000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:#080808;color:#eee;font-family:Arial,sans-serif;animation:iosSplashOut .35s ease 1.05s forwards;pointer-events:none}
+  .ios-splash img{width:72px;height:72px;object-fit:contain;border-radius:50%}
+  .ios-splash b{font-size:17px;letter-spacing:1.2px}.ios-splash span{font:800 9px Arial,sans-serif;color:#8e8e8e;letter-spacing:1.6px}
+  .ios-splash i{display:block;width:76px;height:2px;margin-top:8px;background:#333;overflow:hidden;position:relative}
+  .ios-splash i:after{content:"";position:absolute;inset:0;background:#ddd;transform:translateX(-100%);animation:iosLoad .9s ease forwards}
+  @keyframes iosLoad{to{transform:translateX(0)}}
+  @keyframes iosSplashOut{to{opacity:0;visibility:hidden}}
+}
+@media (orientation:landscape) and (pointer:coarse){
+  .app{grid-template-rows:20px minmax(0,1fr) 28px 20px;grid-template-columns:220px minmax(0,1fr) 230px}
+  .classification.top{grid-row:1}.classification.bottom{grid-row:4}
+  .left,main,.right{grid-row:2}.left{grid-column:1}.right{grid-column:3}main{grid-column:2}
+  footer{grid-row:3}
+  .alert-banner{top:20px;left:calc(220px + env(safe-area-inset-left));right:calc(230px + env(safe-area-inset-right))}
+  /* Keep map controls and content out of the Dynamic Island / rounded-corner safe areas. */
+  .map-layer-control{right:calc(8px + env(safe-area-inset-right))}
+  .left{padding-left:calc(7px + env(safe-area-inset-left))}
+  .right{padding-right:calc(7px + env(safe-area-inset-right))}
+  footer{padding-left:calc(8px + env(safe-area-inset-left));padding-right:calc(8px + env(safe-area-inset-right))}
+}
+@media (orientation:portrait) and (pointer:coarse){
+  .app{grid-template-rows:24px 58vh auto auto 42px 24px!important}
+  .classification.top{grid-row:1!important}.app>main{grid-row:2!important}.left{grid-row:3!important}.right{grid-row:4!important}.app>footer{grid-row:5!important}.classification.bottom{grid-row:6!important}
+  .alert-banner{top:calc(28px + env(safe-area-inset-top))!important}
+}
+@media (prefers-reduced-motion:reduce){.ios-splash{animation:none;display:none}.ios-splash i:after{animation:none}}
+
+/* iOS v2.2 — full-bleed landscape shell with safe content gutters */
+@media (orientation:landscape) and (pointer:coarse){
+  /* Paint all the way to both physical screen edges. Safe areas affect content, not the app canvas. */
+  html,body,#root,.app{width:100%;height:100%;margin:0;padding:0!important;overflow:hidden;background:#080808}
+  .app{
+    grid-template-rows:20px minmax(0,1fr) 28px 20px;
+    grid-template-columns:calc(220px + env(safe-area-inset-left)) minmax(0,1fr) calc(230px + env(safe-area-inset-right));
+  }
+  .classification{grid-column:1/4;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+  .left{padding:8px 8px 8px calc(8px + env(safe-area-inset-left));overflow-y:auto;overflow-x:hidden}
+  .right{padding:8px calc(8px + env(safe-area-inset-right)) 8px 8px;overflow-y:auto;overflow-x:hidden}
+  main{overflow:hidden}
+  footer{padding-left:calc(8px + env(safe-area-inset-left));padding-right:calc(8px + env(safe-area-inset-right));min-width:0;overflow:hidden}
+  .alert-banner{left:calc(220px + env(safe-area-inset-left));right:calc(230px + env(safe-area-inset-right));top:20px}
+  .map-layer-control{right:8px}
+
+  /* Mobile map symbology: labels are revealed by selection/detail UI, not permanently stacked on the map. */
+  .sensor-wrap{width:40px!important;height:40px!important}
+  .map-sensor{width:40px;height:40px}
+  .map-sensor b{display:none}
+  .sensor-symbol{transform:scale(.88);transform-origin:center}
+
+  /* Keep sensor feed rows readable instead of compressing three text lines into a tiny card. */
+  .sensor-card{display:grid!important;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:8px;min-height:48px!important;padding:7px 8px!important;margin:5px 0!important}
+  .sensor-card>span:last-child{min-width:0;gap:2px!important}
+  .sensor-card b{font-size:10px!important;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sensor-card small{font-size:8px!important;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sensor-card em{font-size:8px!important;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sensor-badge{width:32px;height:32px}
+
+  /* Track cards get the same mobile density treatment. */
+  .track-card{min-height:46px!important;padding:7px 8px!important;gap:7px!important}
+  .track-card b{font-size:10px!important;line-height:1.15}
+  .track-card small,.track-card em{font-size:8px!important;line-height:1.2}
+  .track-icon{width:30px;height:30px;flex-basis:30px}
+
+  /* Compact headings preserve vertical space without crushing the rows below them. */
+  h3{margin:5px 0 7px;padding-bottom:5px;font-size:9px}
+  .muted{font-size:8px;line-height:1.3;margin:5px 0 7px}
+}
+
+/* On touch devices, permanent map labels should never be the only way to identify a sensor. */
+@media (hover:none), (pointer:coarse){
+  .map-sensor b{display:none}
+}
+
+/* iOS v2.3 — iPadOS status-bar integration and tablet proportions */
+@media (orientation:landscape) and (pointer:coarse){
+  /* The canvas remains full bleed. The top classification marking gets its own
+     status-bar clearance so iPadOS time/date/app/battery never paints over it. */
+  .app{
+    grid-template-rows:calc(20px + env(safe-area-inset-top)) minmax(0,1fr) 28px calc(20px + env(safe-area-inset-bottom));
+  }
+  .classification.top{
+    padding-top:env(safe-area-inset-top);
+    min-height:calc(20px + env(safe-area-inset-top));
+    align-items:flex-end;
+    padding-bottom:5px;
+  }
+  .classification.bottom{
+    padding-bottom:env(safe-area-inset-bottom);
+    min-height:calc(20px + env(safe-area-inset-bottom));
+    align-items:flex-start;
+    padding-top:5px;
+  }
+  .alert-banner{top:calc(20px + env(safe-area-inset-top))}
+  main,.leaflet-container{width:100%;height:100%;min-width:0;min-height:0}
+}
+
+/* iPad / iPadOS landscape: use the extra canvas for more legible side rails
+   while preserving a large central map. */
+@media (orientation:landscape) and (pointer:coarse) and (min-width:900px){
+  .app{
+    grid-template-columns:calc(285px + env(safe-area-inset-left)) minmax(0,1fr) calc(300px + env(safe-area-inset-right));
+  }
+  .left{padding:12px 12px 12px calc(12px + env(safe-area-inset-left))}
+  .right{padding:12px calc(12px + env(safe-area-inset-right)) 12px 12px}
+  h3{font-size:10px;margin:7px 0 9px;padding-bottom:7px}
+  .muted{font-size:9px;line-height:1.4}
+  .left>button{font-size:10px;min-height:40px;padding:8px;margin:4px 0}
+  .track-card,.sensor-card{min-height:52px!important;padding:8px 9px!important;margin:6px 0!important}
+  .track-card b,.sensor-card b{font-size:11px!important}
+  .track-card small,.track-card em,.sensor-card small,.sensor-card em{font-size:9px!important}
+  .sensor-badge{width:36px;height:36px}
+  .alert-banner{left:calc(285px + env(safe-area-inset-left));right:calc(300px + env(safe-area-inset-right))}
+  .map-layer-toggle{min-height:40px;font-size:10px}
+}

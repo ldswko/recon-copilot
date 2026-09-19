@@ -1,0 +1,135 @@
+import React,{useEffect,useMemo,useRef,useState} from 'react';
+import{createRoot}from'react-dom/client';
+import{Circle,MapContainer,Marker,Popup,Polyline,TileLayer,useMapEvents}from'react-leaflet';
+import L from'leaflet';
+import'leaflet/dist/leaflet.css';import'./style.css';
+
+L.Icon.Default.mergeOptions({iconRetinaUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',iconUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'});
+const vectorIcon=(kind:'uas'|'friendly',heading:number,label:string,speedKts:number)=>L.divIcon({className:'vector-wrap',html:`<div class="air-track-map"><div class="air-pointer ${kind}" style="transform:rotate(${heading}deg)"></div><div class="air-map-label ${kind}"><b>${label}</b><span>${Math.round(speedKts)} KT · ${String(Math.round(heading)).padStart(3,'0')}°</span></div></div>`,iconSize:[120,58],iconAnchor:[60,15]});
+const sensorIcon=(kind:string,active:boolean)=>L.divIcon({className:'sensor-wrap',html:`<div class="map-sensor ${kind.toLowerCase()} ${active?'active':''}"><div class="sensor-symbol"><i></i><i></i><i></i></div><b>${kind}</b></div>`,iconSize:[48,50],iconAnchor:[24,25]});
+const personIcon=(active:boolean)=>L.divIcon({className:'contact-wrap',html:`<div class="person-glyph ${active?'detected':''}"><span></span></div>`,iconSize:[30,36],iconAnchor:[15,18]});
+const shipIcon=(active:boolean)=>L.divIcon({className:'contact-wrap',html:`<div class="ship-glyph ${active?'detected':''}"><span></span></div>`,iconSize:[42,28],iconAnchor:[21,14]});
+const ORIGIN_ICON=L.divIcon({className:'origin-wrap',html:'<div class="origin-plus">+</div>',iconSize:[28,28],iconAnchor:[14,14]});
+const poiIcon=(kind:'airport'|'port')=>L.divIcon({className:'poi-wrap',html:`<div class="poi-glyph ${kind}">${kind==='airport'?'✈':'⚓'}</div>`,iconSize:[30,30],iconAnchor:[15,15]});
+
+type Obj={id:string,name:string,lat:number,lng:number};
+type Aircraft={id:string,label:string,manufacturer:string,model:string,category:string,altitudeFt:number,speedKts:number,heading:number,lat:number,lng:number};
+type Sensor={id:string,name:string,short:string,type:string,lat:number,lng:number,rangeKm:number,fields:string[]};
+type Report={id:string,type:'SALUTE'|'EVENT',track:string,time:string,body:string,status:'DRAFT'|'READY'|'REPORTED'};
+const CLASSIFICATIONS=[
+ {label:'UNCLASSIFIED',bg:'#007a33',fg:'#ffffff'},
+ {label:'CONTROLLED',bg:'#502b85',fg:'#ffffff'},
+ {label:'CUI',bg:'#502b85',fg:'#ffffff'},
+ {label:'CONFIDENTIAL',bg:'#0033a0',fg:'#ffffff'},
+ {label:'SECRET',bg:'#c8102e',fg:'#ffffff'},
+ {label:'TOP SECRET',bg:'#ff8c00',fg:'#000000'},
+ {label:'TOP SECRET // SCI',bg:'#fce83a',fg:'#000000'}
+] as const;
+const SITE:[number,number]=[42.3601,-71.0589], START:[number,number]=[42.4070,-70.9970];
+const AIRPORTS=[{name:'Boston Logan International Airport',lat:42.3656,lng:-71.0096}];
+const PORTS=[{name:'Port of Boston / Conley Terminal',lat:42.3443,lng:-71.0277}];
+type LayerKey='friendly'|'uas'|'ground'|'vessels'|'seismic'|'rf'|'radar'|'flir'|'airports'|'ports'|'markers'|'routes';
+const SENSORS:Sensor[]=[
+ {id:'S-SEQ1',name:'Seismic Node Alpha',short:'SEIS',type:'Seismic / ground vibration',lat:42.3660,lng:-71.0730,rangeKm:1.6,fields:['Vibration event','Relative intensity','Event timestamp']},
+ {id:'S-SEQ2',name:'Seismic Node Bravo',short:'SEIS',type:'Seismic / ground vibration',lat:42.3525,lng:-71.0690,rangeKm:1.5,fields:['Vibration event','Relative intensity','Event timestamp']},
+ {id:'S-RF1',name:'RF Detection Node',short:'RF',type:'Passive RF',lat:42.3718,lng:-71.0800,rangeKm:5.5,fields:['Signal activity','Bearing estimate','Track timestamp']},
+ {id:'S-RAD1',name:'Compact Radar',short:'RAD',type:'Demo radar',lat:42.3470,lng:-71.0850,rangeKm:4.8,fields:['Range estimate','Bearing','Altitude estimate']},
+ {id:'S-FLIR1',name:'FLIR Maritime Camera',short:'FLIR',type:'Thermal / maritime demo',lat:42.3385,lng:-71.0280,rangeKm:4.0,fields:['Thermal contact','Bearing','Classification cue']}
+];
+function distanceKm(a:[number,number],b:[number,number]){const R=6371,p=Math.PI/180,dLat=(b[0]-a[0])*p,dLon=(b[1]-a[1])*p;const x=Math.sin(dLat/2)**2+Math.cos(a[0]*p)*Math.cos(b[0]*p)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
+function bearingDeg(a:[number,number],b:[number,number]){const p=Math.PI/180,lat1=a[0]*p,lat2=b[0]*p,dLon=(b[1]-a[1])*p;const y=Math.sin(dLon)*Math.cos(lat2),x=Math.cos(lat1)*Math.sin(lat2)-Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);return(Math.atan2(y,x)/p+360)%360}
+function Clicker({onAdd,onMove}:{onAdd:(a:number,b:number)=>void,onMove:(a:number,b:number)=>void}){useMapEvents({click:e=>onAdd(e.latlng.lat,e.latlng.lng),mousemove:e=>onMove(e.latlng.lat,e.latlng.lng)});return null}
+function SensorHoverTracker({sensors,onHover}:{sensors:Sensor[],onHover:(id:string|null)=>void}){
+ const map=useMapEvents({
+  mousemove:e=>{
+   const pointer=map.latLngToContainerPoint(e.latlng);
+   let nearest:string|null=null,best=26;
+   for(const s of sensors){
+    const pt=map.latLngToContainerPoint(L.latLng(s.lat,s.lng));
+    const d=pointer.distanceTo(pt);
+    if(d<best){best=d;nearest=s.id}
+   }
+   onHover(nearest);
+  },
+  mouseout:()=>onHover(null),
+  zoomstart:()=>onHover(null),
+  movestart:()=>onHover(null)
+ });
+ return null
+}
+function App(){
+ const[objs,setObjs]=useState<Obj[]>(()=>JSON.parse(localStorage.getItem('takobjs')||'[]'));const[pos,setPos]=useState<number[]>(SITE);const[draw,setDraw]=useState(false);const[route,setRoute]=useState<[number,number][]>([]);
+ const[uas,setUas]=useState<Aircraft|null>(null);const[sim,setSim]=useState(false);const[alert,setAlert]=useState(false);const[alertOrigin,setAlertOrigin]=useState<[number,number]>(SITE);const[alertRadiusKm,setAlertRadiusKm]=useState(2);const[focus,setFocus]=useState<string|null>(null);const timer=useRef<number|null>(null);const mapRef=useRef<L.Map|null>(null);
+ const[friendly,setFriendly]=useState<Aircraft>({id:'MC130J-01',label:'MC-130J II COMMANDO',manufacturer:'Lockheed Martin',model:'MC-130J Commando II',category:'Friendly special operations tanker / transport',altitudeFt:4200,speedKts:250,heading:132,lat:42.388,lng:-71.104});
+ const[ground,setGround]=useState({id:'GRD-01',label:'SIM GROUND CONTACT',lat:42.377,lng:-71.086});
+ const[ship,setShip]=useState({id:'VES-01',label:'SIM VESSEL-01',lat:42.326,lng:-71.010});
+ const[layers,setLayers]=useState<Record<LayerKey,boolean>>({friendly:true,uas:true,ground:true,vessels:true,seismic:true,rf:true,radar:true,flir:true,airports:false,ports:false,markers:true,routes:true});
+ const toggleLayer=(k:LayerKey)=>setLayers(x=>({...x,[k]:!x[k]}));
+ const sensorVisible=(short:string)=>short==='SEIS'?layers.seismic:short==='RF'?layers.rf:short==='RAD'?layers.radar:layers.flir;
+ const[classificationIndex,setClassificationIndex]=useState(0);const classification=CLASSIFICATIONS[classificationIndex];const cycleClassification=()=>setClassificationIndex(i=>(i+1)%CLASSIFICATIONS.length);
+ const[layerPanelOpen,setLayerPanelOpen]=useState(false);
+ const[reports,setReports]=useState<Report[]>([]);const[reportTrack,setReportTrack]=useState<'uas'|'ground'|'ship'>('ground');const[clock,setClock]=useState(new Date());const[trackTip,setTrackTip]=useState<{kind:'uas'|'friendly'|'ground'|'ship',x:number,y:number}|null>(null);const[hoverSensor,setHoverSensor]=useState<string|null>(null);
+ useEffect(()=>localStorage.setItem('takobjs',JSON.stringify(objs)),[objs]);
+ useEffect(()=>{const t=window.setInterval(()=>setClock(new Date()),1000);return()=>window.clearInterval(t)},[]);
+ const hhmm=(d:Date,zone?:string)=>new Intl.DateTimeFormat('en-US',{hour:'2-digit',minute:'2-digit',hour12:false,...(zone?{timeZone:zone}:{})}).format(d).replace(':','');
+ useEffect(()=>{if(!sim||!uas)return;timer.current=window.setInterval(()=>setUas(d=>{if(!d)return d;const step=.035,next:[number,number]=[d.lat+(SITE[0]-d.lat)*step,d.lng+(SITE[1]-d.lng)*step];return{...d,lat:next[0],lng:next[1],heading:bearingDeg([d.lat,d.lng],next)}}),250);return()=>{if(timer.current)window.clearInterval(timer.current)}},[sim]);
+ useEffect(()=>{if(!sim)return;const t=window.setInterval(()=>{setFriendly(f=>{const next:[number,number]=[f.lat-.00018,f.lng+.00024];return{...f,lat:next[0],lng:next[1],heading:bearingDeg([f.lat,f.lng],next)}});setGround(g=>({...g,lat:g.lat-.00010,lng:g.lng+.00008}));setShip(v=>({...v,lat:v.lat+.00005,lng:v.lng-.00016}));},250);return()=>window.clearInterval(t)},[sim]);
+ const range=useMemo(()=>uas?distanceKm([uas.lat,uas.lng],alertOrigin):null,[uas,alertOrigin]);useEffect(()=>{if(range!==null&&range<=alertRadiusKm)setAlert(true)},[range,alertRadiusKm]);
+ const detections=useMemo(()=>SENSORS.map(s=>{const target=s.short==='SEIS'?ground:s.short==='FLIR'?ship:uas;const distance=target?distanceKm([s.lat,s.lng],[target.lat,target.lng]):null;return{...s,detected:!!target&&distance!<=s.rangeKm,distance,targetLabel:target?.label||'NO TRACK'}}),[uas,ground,ship]);
+ const activeCount=detections.filter(s=>s.detected).length;const showLinks=focus==='uas'||!!focus?.startsWith('S-');
+ function mapClick(lat:number,lng:number){if(draw){setRoute(r=>[...r,[lat,lng]]);return}const name=prompt('Object name','Marker '+(objs.length+1));if(name)setObjs(o=>[...o,{id:crypto.randomUUID(),name,lat,lng}])}
+ function startUas(){setAlert(false);setUas({id:'UAS-001',label:'SIM UAS-001',manufacturer:'Demo Systems',model:'Quad-X',category:'Small quadcopter',altitudeFt:380,speedKts:24,heading:bearingDeg(START,SITE),lat:START[0],lng:START[1]});setSim(true)}
+ function makeSalute(which:'uas'|'ground'|'ship'=reportTrack){const now=new Date();const t=now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});let track='',size='',activity='',loc='',unit='',equipment='';if(which==='uas'&&uas){track=uas.label;size='1 UAS';activity='Airborne track moving toward monitored area';loc=`${uas.lat.toFixed(5)}, ${uas.lng.toFixed(5)}`;unit='Unknown / simulated';equipment=`${uas.category}, ${uas.model}`;}else if(which==='ship'){track=ship.label;size='1 surface vessel';activity='Surface movement observed';loc=`${ship.lat.toFixed(5)}, ${ship.lng.toFixed(5)}`;unit='Unknown / simulated';equipment='Surface vessel; FLIR cue';}else{track=ground.label;size='1 simulated ground contact';activity='Ground movement detected';loc=`${ground.lat.toFixed(5)}, ${ground.lng.toFixed(5)}`;unit='Unknown / simulated';equipment='Unknown; seismic cue';}const body=`S — Size: ${size}
+A — Activity: ${activity}
+L — Location: ${loc}
+U — Unit/Uniform: ${unit}
+T — Time: ${t}
+E — Equipment: ${equipment}`;setReports(r=>[{id:crypto.randomUUID(),type:'SALUTE',track,time:t,body,status:'READY'},...r]);}
+ function reportEvent(){const now=new Date();const t=now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});const body=`Event report — ${activeCount} active sensor feed(s); ${uas?'UAS track present; ':''}ground and maritime demo tracks monitored. Position reference: ${SITE[0].toFixed(4)}, ${SITE[1].toFixed(4)}.`;setReports(r=>[{id:crypto.randomUUID(),type:'EVENT',track:'353SOW',time:t,body,status:'DRAFT'},...r]);}
+ function markReported(id:string){setReports(r=>r.map(x=>x.id===id?{...x,status:'REPORTED'}:x))}
+ return <div className="app">
+  <button type="button" className="classification top" style={{backgroundColor:classification.bg,color:classification.fg}} onClick={cycleClassification} title="Click to cycle classification">{classification.label}</button>
+  <header><img src="/320st-logo.jpeg" alt="320th Special Tactics Squadron emblem"/><b>RECON COPILOT</b><span>MAP</span><span>OBJECTS</span><span>SENSOR FUSION</span><i>320th SPECIAL TACTICS SQUADRON</i></header>
+  {alert&&uas&&<div className="alert-banner"><strong>⚠ UAS PROXIMITY ALERT</strong><span>{uas.label} · {range?.toFixed(2)} km from alert origin · {activeCount} sensor feed(s)</span><button onClick={()=>setAlert(false)}>ACKNOWLEDGE</button></div>}
+  <aside className="left"><h3>TRACKS <small>{objs.length+1+(uas?1:0)}</small></h3>
+   {uas&&<button className="track-card hostile" onMouseEnter={e=>{setFocus('uas');setReportTrack('uas');setTrackTip({kind:'uas',x:e.clientX,y:e.clientY})}} onMouseMove={e=>setTrackTip({kind:'uas',x:e.clientX,y:e.clientY})} onMouseLeave={()=>{setFocus(null);setTrackTip(null)}}><span className="track-icon"><i className="track-pointer hostile"></i></span><span><b>{uas.label}</b><small>{uas.lat.toFixed(5)}, {uas.lng.toFixed(5)}</small><em>{range?.toFixed(2)} km · {activeCount} sensors</em></span></button>}
+   <button className="track-card friendly" onMouseEnter={e=>setTrackTip({kind:'friendly',x:e.clientX,y:e.clientY})} onMouseMove={e=>setTrackTip({kind:'friendly',x:e.clientX,y:e.clientY})} onMouseLeave={()=>setTrackTip(null)}><span className="track-icon"><i className="track-pointer friendly"></i></span><span><b>{friendly.label}</b><small>ID {friendly.id} · {friendly.lat.toFixed(5)}, {friendly.lng.toFixed(5)}</small><em>Friendly · {friendly.altitudeFt} ft</em></span></button>
+   <button className="track-card hostile" onMouseEnter={e=>{setReportTrack('ground');setTrackTip({kind:'ground',x:e.clientX,y:e.clientY})}} onMouseMove={e=>setTrackTip({kind:'ground',x:e.clientX,y:e.clientY})} onMouseLeave={()=>setTrackTip(null)}><span className="track-icon"><i className="track-person"><b></b></i></span><span><b>{ground.label}</b><small>{ground.lat.toFixed(5)}, {ground.lng.toFixed(5)}</small><em>Ground contact · seismic demo</em></span></button>
+   <button className="track-card hostile" onMouseEnter={e=>{setReportTrack('ship');setTrackTip({kind:'ship',x:e.clientX,y:e.clientY})}} onMouseMove={e=>setTrackTip({kind:'ship',x:e.clientX,y:e.clientY})} onMouseLeave={()=>setTrackTip(null)}><span className="track-icon"><i className="track-ship"></i></span><span><b>{ship.label}</b><small>{ship.lat.toFixed(5)}, {ship.lng.toFixed(5)}</small><em>Surface contact · FLIR demo</em></span></button>
+   {objs.map(o=><div className="obj" key={o.id}><span>◆</span><div><b>{o.name}</b><small>{o.lat.toFixed(5)}, {o.lng.toFixed(5)}</small></div><button onClick={()=>setObjs(x=>x.filter(y=>y.id!==o.id))}>×</button></div>)}
+   <h3>SIMULATION</h3><button className={sim?'active':''} onClick={startUas}>{sim?'RESTART UAS APPROACH':'SIMULATE UAS APPROACH'}</button><button onClick={()=>setSim(x=>!x)} disabled={!uas}>{sim?'PAUSE UAS':'RESUME UAS'}</button><button onClick={()=>{setSim(false);setUas(null);setAlert(false)}} disabled={!uas}>REMOVE UAS</button>
+   <h3>TOOLS</h3><div className="alert-zone-tools"><b>PROXIMITY ALERT ZONE</b><span>Drag the + on the map to move the origin.</span><label>RADIUS <strong>{alertRadiusKm.toFixed(1)} KM</strong></label><input aria-label="Alert radius in kilometers" type="range" min="0.5" max="10" step="0.5" value={alertRadiusKm} onChange={e=>{setAlertRadiusKm(Number(e.target.value));setAlert(false)}}/><button onClick={()=>{setAlertOrigin(SITE);setAlertRadiusKm(2);setAlert(false);mapRef.current?.setView(SITE,13,{animate:true})}}>RESET ALERT ZONE</button></div><button onClick={()=>makeSalute(reportTrack)}>GENERATE SALUTE — {reportTrack.toUpperCase()}</button><button onClick={reportEvent}>REPORT EVENT TO 353SOW</button>
+  </aside>
+  <main className={alert?'proximity-active':''}>
+   <div className="map-layer-control">
+    <button type="button" className={layerPanelOpen?'map-layer-toggle open':'map-layer-toggle'} onClick={()=>setLayerPanelOpen(v=>!v)} aria-expanded={layerPanelOpen}>☰ MAP LAYERS</button>
+    {layerPanelOpen&&<div className="map-layer-panel">
+     <div className="map-layer-head"><b>MAP LAYERS</b><button type="button" onClick={()=>setLayerPanelOpen(false)} aria-label="Close map layers">×</button></div>
+     <div className="layer-list">{([['friendly','FRIENDLY FORCES'],['uas','ENEMY UAS'],['ground','ENEMY GROUND'],['vessels','ENEMY VESSELS'],['seismic','SEISMIC SENSORS'],['rf','RF SENSORS'],['radar','RADAR SENSORS'],['flir','FLIR SENSORS'],['airports','AIRPORTS'],['ports','PORTS'],['markers','USER MARKERS'],['routes','ROUTES']] as [LayerKey,string][]).map(([k,label])=><label className="layer-row" key={k}><input type="checkbox" checked={layers[k]} onChange={()=>toggleLayer(k)}/><span>{label}</span><i>{layers[k]?'ON':'OFF'}</i></label>)}</div>
+    </div>}
+   </div>
+   <MapContainer center={SITE} zoom={13} ref={mapRef}><TileLayer attribution='&copy; OpenStreetMap contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/><Clicker onAdd={mapClick} onMove={(a,b)=>setPos([a,b])}/><SensorHoverTracker sensors={SENSORS.filter(s=>sensorVisible(s.short))} onHover={setHoverSensor}/><Circle center={alertOrigin} radius={alertRadiusKm*1000} pathOptions={{color:alert?'#ff2d2d':'#f0c84b',dashArray:'8 8',weight:alert?4:2,fillOpacity:alert?.10:.035}}/><Marker draggable={true} autoPan={true} position={alertOrigin} icon={ORIGIN_ICON} eventHandlers={{dragstart:()=>setAlert(false),dragend:e=>{const marker=e.target as L.Marker;const ll=marker.getLatLng();setAlertOrigin([ll.lat,ll.lng]);setAlert(false)}}}><Popup><b>PROXIMITY ALERT ORIGIN</b><br/>Drag this + to reposition the alert zone.<br/>Radius: {alertRadiusKm.toFixed(1)} km</Popup></Marker>
+   {SENSORS.filter(s=>sensorVisible(s.short)).map(s=>{const d=detections.find(x=>x.id===s.id)!;return <React.Fragment key={s.id}>{hoverSensor===s.id&&<Circle interactive={false} center={[s.lat,s.lng]} radius={s.rangeKm*1000} pathOptions={{color:d.detected?'#ff3030':'#22c55e',fillColor:d.detected?'#ff3030':'#22c55e',weight:3,dashArray:'8 6',fillOpacity:.10,opacity:1}}/>}<Marker position={[s.lat,s.lng]} icon={sensorIcon(s.short,d.detected)} eventHandlers={{mouseover:()=>setFocus(s.id),mouseout:()=>setFocus(current=>current===s.id?null:current)}}><Popup><b>{s.name}</b><br/>{s.type}<br/>{d.detected?'DETECTING UAS':'No UAS track'}</Popup></Marker></React.Fragment>})}
+   {uas&&layers.uas&&<><Polyline positions={[START,[uas.lat,uas.lng]]} pathOptions={{dashArray:'6 8',weight:2}}/><Marker position={[uas.lat,uas.lng]} icon={vectorIcon('uas',uas.heading,uas.id,uas.speedKts)} eventHandlers={{mouseover:e=>{setFocus('uas');setReportTrack('uas');const o=e.originalEvent as MouseEvent;setTrackTip({kind:'uas',x:o.clientX,y:o.clientY})},mousemove:e=>{const o=e.originalEvent as MouseEvent;setTrackTip({kind:'uas',x:o.clientX,y:o.clientY})},mouseout:()=>{setFocus(null);setTrackTip(null)},click:()=>{setFocus('uas');setReportTrack('uas')}}}><Popup><b>{uas.label}</b><br/>HOSTILE / UNKNOWN DEMO TRACK<br/>{activeCount} sensor feeds</Popup></Marker>{showLinks&&detections.filter(s=>s.detected&&(focus==='uas'||focus===s.id)).map(s=><Polyline key={'link'+s.id} positions={[[s.lat,s.lng],[uas.lat,uas.lng]]} pathOptions={{weight:2,dashArray:'4 5'}}/>)}</>}
+   {layers.friendly&&<Marker position={[friendly.lat,friendly.lng]} icon={vectorIcon('friendly',friendly.heading,friendly.id,friendly.speedKts)} eventHandlers={{mouseover:e=>{const o=e.originalEvent as MouseEvent;setTrackTip({kind:'friendly',x:o.clientX,y:o.clientY})},mousemove:e=>{const o=e.originalEvent as MouseEvent;setTrackTip({kind:'friendly',x:o.clientX,y:o.clientY})},mouseout:()=>setTrackTip(null)}}><Popup><b>{friendly.label}</b><br/>FRIENDLY<br/>{friendly.altitudeFt} ft · {friendly.speedKts} kt</Popup></Marker>}
+   {layers.ground&&<Marker position={[ground.lat,ground.lng]} icon={personIcon(detections.some(d=>d.short==='SEIS'&&d.detected))} eventHandlers={{mouseover:e=>{setReportTrack('ground');const o=e.originalEvent as MouseEvent;setTrackTip({kind:'ground',x:o.clientX,y:o.clientY})},mousemove:e=>{const o=e.originalEvent as MouseEvent;setTrackTip({kind:'ground',x:o.clientX,y:o.clientY})},mouseout:()=>setTrackTip(null),click:()=>setReportTrack('ground')}}><Popup><b>{ground.label}</b><br/>SIMULATED GROUND MOVEMENT<br/>Detected by seismic nodes when in demo coverage</Popup></Marker>}
+   {layers.vessels&&<Marker position={[ship.lat,ship.lng]} icon={shipIcon(detections.some(d=>d.short==='FLIR'&&d.detected))} eventHandlers={{mouseover:e=>{setReportTrack('ship');const o=e.originalEvent as MouseEvent;setTrackTip({kind:'ship',x:o.clientX,y:o.clientY})},mousemove:e=>{const o=e.originalEvent as MouseEvent;setTrackTip({kind:'ship',x:o.clientX,y:o.clientY})},mouseout:()=>setTrackTip(null),click:()=>setReportTrack('ship')}}><Popup><b>{ship.label}</b><br/>SIMULATED SURFACE VESSEL<br/>Detected by FLIR when in demo coverage</Popup></Marker>}
+   {layers.airports&&AIRPORTS.map(a=><Marker key={a.name} position={[a.lat,a.lng]} icon={poiIcon('airport')}><Popup><b>{a.name}</b><br/>PUBLIC AIRPORT LAYER</Popup></Marker>)}
+   {layers.ports&&PORTS.map(a=><Marker key={a.name} position={[a.lat,a.lng]} icon={poiIcon('port')}><Popup><b>{a.name}</b><br/>PUBLIC PORT LAYER</Popup></Marker>)}
+   {layers.markers&&objs.map(o=><Marker key={o.id} position={[o.lat,o.lng]}><Popup>{o.name}</Popup></Marker>)}{layers.routes&&route.length>1&&<Polyline positions={route}/>}</MapContainer><div className={'zone-label '+(alert?'hot':'')}>{alert?'⚠ CONTACT INSIDE ALERT ZONE':`${alertRadiusKm.toFixed(1)} KM PROXIMITY ALERT ZONE`}<br/><small>{alertOrigin[0].toFixed(4)}, {alertOrigin[1].toFixed(4)}</small></div></main>
+  <aside className="right"><h3>SENSOR FEEDS <small>{activeCount}/{SENSORS.length}</small></h3><p className="muted">Example feeds fuse three simulated target classes: UAS, ground movement, and surface vessels. Hover/focus UAS-related feeds to visualize links.</p>
+   {detections.map(s=><button key={s.id} className={'sensor-card '+(s.detected?'detecting':'idle')} onMouseEnter={()=>setFocus(s.id)} onMouseLeave={()=>setFocus(null)} onFocus={()=>setFocus(s.id)} onBlur={()=>setFocus(null)}><span className="sensor-badge">{s.short}</span><span><b>{s.name}</b><small>{s.type} · demo range {s.rangeKm.toFixed(1)} km</small><em>{s.detected?`● DETECTING ${s.targetLabel} · ${s.distance?.toFixed(2)} km`:'○ STANDBY'}</em></span></button>)}
+
+   <section className="reports"><h3>REPORTS <small>{reports.length}</small></h3><p className="muted">Hover or select a simulated unknown track, then generate a SALUTE draft from the Tools panel. Reports stay here for review and tracking.</p>{reports.length===0&&<div className="empty-report">NO REPORTS GENERATED</div>}{reports.map(r=><article className={'report-card '+r.status.toLowerCase()} key={r.id}><div className="report-head"><b>{r.type}</b><span>{r.time}</span><em>{r.status}</em></div><strong>{r.track}</strong><pre>{r.body}</pre><div className="report-actions">{r.status!=='REPORTED'&&<button onClick={()=>markReported(r.id)}>{r.type==='EVENT'?'SEND TO 353SOW':'MARK REPORTED'}</button>}<button onClick={()=>setReports(x=>x.filter(y=>y.id!==r.id))}>DELETE</button></div></article>)}</section>
+   {uas&&<section className="details"><h3>FUSED UAS TRACK</h3><dl><dt>ID</dt><dd>{uas.id}</dd><dt>Model</dt><dd>{uas.model}</dd><dt>Altitude</dt><dd>{uas.altitudeFt} ft</dd><dt>Speed</dt><dd>{uas.speedKts} kt</dd><dt>Heading</dt><dd>{uas.heading}°</dd><dt>Site range</dt><dd>{range?.toFixed(2)} km</dd><dt>Feeds</dt><dd>{activeCount} active</dd></dl><h3>CONTRIBUTING DATA</h3>{detections.filter(s=>s.detected).map(s=><div className="feed" key={s.id}><b>{s.short}</b><span>{s.fields.join(' · ')}</span></div>)}</section>}
+  </aside>
+  {trackTip&&<div className="track-tooltip" style={{left:trackTip.x+16,top:trackTip.y+14}}>
+   {trackTip.kind==='friendly'?<><strong>{friendly.label}</strong><small>FRIENDLY · ID {friendly.id}</small><dl><dt>Platform</dt><dd>{friendly.model}</dd><dt>Manufacturer</dt><dd>{friendly.manufacturer}</dd><dt>Role</dt><dd>{friendly.category}</dd><dt>Altitude</dt><dd>{friendly.altitudeFt} ft</dd><dt>Speed</dt><dd>{friendly.speedKts} kt</dd><dt>Heading</dt><dd>{Math.round(friendly.heading)}°</dd><dt>Position</dt><dd>{friendly.lat.toFixed(5)}, {friendly.lng.toFixed(5)}</dd></dl></>:
+   trackTip.kind==='uas'&&uas?<><strong>{uas.label}</strong><small>UNKNOWN / HOSTILE DEMO TRACK</small><dl><dt>ID</dt><dd>{uas.id}</dd><dt>Type</dt><dd>{uas.category}</dd><dt>Model</dt><dd>{uas.model}</dd><dt>Altitude</dt><dd>{uas.altitudeFt} ft</dd><dt>Speed</dt><dd>{uas.speedKts} kt</dd><dt>Range</dt><dd>{range?.toFixed(2)} km</dd><dt>Tracking</dt><dd>{detections.filter(d=>d.detected&&d.targetLabel===uas.label).map(d=>d.short).join(', ')||'No active sensor'}</dd></dl></>:
+   trackTip.kind==='ground'?<><strong>{ground.label}</strong><small>SIMULATED GROUND CONTACT</small><dl><dt>ID</dt><dd>{ground.id}</dd><dt>Position</dt><dd>{ground.lat.toFixed(5)}, {ground.lng.toFixed(5)}</dd><dt>Tracking</dt><dd>{detections.filter(d=>d.detected&&d.targetLabel===ground.label).map(d=>d.name).join(', ')||'No active sensor'}</dd><dt>Source</dt><dd>Seismic / acoustic cue</dd><dt>Footfall bands</dt><dd>3 distinct demo cadence clusters</dd><dt>Est. personnel</dt><dd>3–5 people (simulated)</dd><dt>Confidence</dt><dd>Moderate · demo estimate only</dd></dl></>:
+   <><strong>{ship.label}</strong><small>SIMULATED SURFACE CONTACT</small><img className="flir-preview" src="/naval-flir-demo.jpeg" alt="Example simulated FLIR capture of a small vessel"/><span className="capture-caption">EXAMPLE FLIR CAPTURE · SIMULATED ASSOCIATION</span><dl><dt>ID</dt><dd>{ship.id}</dd><dt>Position</dt><dd>{ship.lat.toFixed(5)}, {ship.lng.toFixed(5)}</dd><dt>Tracking</dt><dd>{detections.filter(d=>d.detected&&d.targetLabel===ship.label).map(d=>d.name).join(', ')||'No active sensor'}</dd><dt>Source</dt><dd>FLIR / EO-IR cue</dd><dt>Classification</dt><dd>Small surface vessel (demo)</dd></dl></>}
+  </div>}
+  <button type="button" className="classification bottom" style={{backgroundColor:classification.bg,color:classification.fg}} onClick={cycleClassification} title="Click to cycle classification">{classification.label}</button>
+  <footer><span>LAT {pos[0].toFixed(6)}</span><span>LON {pos[1].toFixed(6)}</span>{uas&&<span>UAS {range?.toFixed(2)} KM</span>}<span>SENSORS {activeCount} ACTIVE</span><strong>DEMO MODE</strong><div className="time-group" title="Local / Zulu (UTC) / Japan Standard Time"><b>{hhmm(clock)}L</b><span>{hhmm(clock,'UTC')}Z</span><span>{hhmm(clock,'Asia/Tokyo')}J</span></div></footer>
+ </div>}
+createRoot(document.getElementById('root')!).render(<App/>);
