@@ -1,6 +1,6 @@
 # RECON COPILOT
 
-RECON COPILOT is a simulated situational-awareness mapping MVP with separate web, iPadOS, and iPhone interface builds.
+RECON COPILOT is a simulated situational-awareness mapping tool for the 320th Special Tactics Squadron with separate web, iPadOS, and iPhone interface builds.
 
 > **Demo / prototype only.** Tracks, sensor detections, ranges, reports, imagery, personnel estimates, and other operational data in this repository are simulated examples and are not intended for operational use.
 
